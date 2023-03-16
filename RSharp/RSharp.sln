@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSharp", "RSharp\RSharp.csproj", "{1FC39228-5DB0-495C-8401-380876816509}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSharp.Test", "RSharp.Test\RSharp.Test.csproj", "{B211E117-B341-4DEF-997A-673680E9FB82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1FC39228-5DB0-495C-8401-380876816509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FC39228-5DB0-495C-8401-380876816509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FC39228-5DB0-495C-8401-380876816509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FC39228-5DB0-495C-8401-380876816509}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B211E117-B341-4DEF-997A-673680E9FB82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B211E117-B341-4DEF-997A-673680E9FB82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B211E117-B341-4DEF-997A-673680E9FB82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B211E117-B341-4DEF-997A-673680E9FB82}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
