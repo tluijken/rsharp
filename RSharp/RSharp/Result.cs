@@ -5,51 +5,54 @@ public record Result<TResult, TException> where TException : Exception
     private readonly TResult? _value;
     private readonly TException? _error;
 
-    public bool IsOk { get; }
-    public bool IsErr => !IsOk;
+    private readonly bool _isOk;
+    
+    public bool IsOk() => _isOk;
+    
+    public bool IsErr() => !_isOk;
 
     private Result(TResult value)
     {
         _value = value;
-        IsOk = true;
+        _isOk = true;
     }
 
     private Result(TException error)
     {
         _error = error;
-        IsOk = false;
+        _isOk = false;
     }
 
     public TResult Unwrap() =>
-        IsOk switch
+        _isOk switch
         {
             true => _value!,
             _ => throw _error!
         };
 
     public TResult UnwrapOr(TResult defaultValue) =>
-        IsOk switch
+        _isOk switch
         {
             true => _value!,
             _ => defaultValue
         };
     
     public TResult UnwrapOrElse(Func<TResult> defaultValue) =>
-        IsOk switch
+        _isOk switch
         {
             true => _value!,
             _ => defaultValue()
         };
     
     public TResult UnwrapOrElse(Func<TException, TResult> defaultValue) => 
-        IsOk switch
+        _isOk switch
         {
             true => _value!,
             _ => defaultValue(_error!)
         };
     
     public TResult Expect(string message) =>  
-        IsOk switch
+        _isOk switch
         {
             true => _value!,
             _ => throw new Exception(message)
@@ -67,7 +70,7 @@ public record Result<TResult, TException> where TException : Exception
 
     public void Match(Action<TResult> okAction, Action<TException> errorAction)
     {
-        switch (IsOk)
+        switch (_isOk)
         {
             case true:
                 okAction(_value!);

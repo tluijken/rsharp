@@ -19,7 +19,7 @@ public class TestResult
     public void TestImplicitOk()
     {
         Result<int, Exception> result = 2;
-        Assert.True(result.IsOk);
+        Assert.True(result.IsOk());
         Assert.Equal(2, result.Unwrap());
     }
     
@@ -27,7 +27,7 @@ public class TestResult
     public void TestImplicitErr()
     {
         Result<int, Exception> result = new DivideByZeroException();
-        Assert.True(result.IsErr);
+        Assert.True(result.IsErr());
         Assert.Throws<DivideByZeroException>(() => result.Unwrap());
     }
 
@@ -46,7 +46,7 @@ public class TestResult
     public void TestOk()
     {
         var result = Divide(4, 2);
-        Assert.True(result.IsOk);
+        Assert.True(result.IsOk());
         Assert.Equal(2, result.Unwrap());
     }
     
@@ -54,7 +54,7 @@ public class TestResult
     public void TestErr()
     {
         var result = Divide(4, 0);
-        Assert.True(result.IsErr);
+        Assert.True(result.IsErr());
         Assert.Throws<DivideByZeroException>(() => result.Unwrap());
     }
     
