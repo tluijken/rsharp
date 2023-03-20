@@ -11,11 +11,7 @@ public class TestMap
     {
         var a = new SourceObject(1, "Name", "Description", 1.0);
         var b = a.Map(source => new TargetObject(new Guid(a.Id.ToString().PadLeft(32, '0')), source.Name, source.Description, source.Value));
-        Assert.NotNull(b);
-        Assert.Equal(a.Description, b.Description);
-        Assert.Equal(a.Name, b.Name);
-        Assert.Equal(a.Value, b.Value);
-        Assert.Equal(new Guid(a.Id.ToString().PadLeft(32, '0')), b.Id);
+        CompareSourceWithMappedTarget(b, a);
     }
 
     [Fact]
@@ -32,10 +28,16 @@ public class TestMap
         Assert.Equal(a.Count, b.Count);
         for (var i = 0; i < a.Count; i++)
         {
-            Assert.Equal(a[i].Description, b.ElementAt(i).Description);
-            Assert.Equal(a[i].Name, b.ElementAt(i).Name);
-            Assert.Equal(a[i].Value, b.ElementAt(i).Value);
-            Assert.Equal(new Guid(a[i].Id.ToString().PadLeft(32, '0')), b.ElementAt(i).Id);
+           CompareSourceWithMappedTarget(b[i], a[i]);
         }
+    }
+    
+    private static void CompareSourceWithMappedTarget(TargetObject b, SourceObject a)
+    {
+        Assert.NotNull(b);
+        Assert.Equal(a.Description, b.Description);
+        Assert.Equal(a.Name, b.Name);
+        Assert.Equal(a.Value, b.Value);
+        Assert.Equal(new Guid(a.Id.ToString().PadLeft(32, '0')), b.Id);
     }
 }
