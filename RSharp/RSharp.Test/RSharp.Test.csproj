@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RSharp\RSharp.csproj" />
+        <ProjectReference Include="..\RSharp\RSharp.csproj" />
     </ItemGroup>
 
 </Project>
