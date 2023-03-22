@@ -4,8 +4,8 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.0.1</Version>
-        <AssemblyVersion>0.0.1</AssemblyVersion>
+        <Version>0.0.2</Version>
+        <AssemblyVersion>0.0.2</AssemblyVersion>
         <PackageVersion>0.0.2</PackageVersion>
         <Description>Provides functional programming utilities, which should be recognizable for rust developers also using csharp.</Description>
         <PackageProjectUrl>https://github.com/tluijken/rsharp</PackageProjectUrl>
