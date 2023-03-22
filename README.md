@@ -12,6 +12,7 @@ Provides functional programming utilities, which should be recognizable for rust
   - [Option](#option)
   - [Result](#result)
   - [Map](#map)
+  - [ForEach](#foreach)
 
 ## Getting started
 
@@ -134,4 +135,33 @@ mapResult.Match(
     ok: b => b, // will be triggered if the mapping succeeds
     err: e => null // will be triggered if the mapping fails
 );
+```
+
+### ForEach
+The `ForEach` function is used to iterate over a collection of values. It is similar to the `ForEach` method in LINQ but adds the index of the current item to the callback function.
+
+```csharp
+var a = new List<SourceObject>
+        {
+            new(1, "Object 1", "This is the first element in the list", 1.0),
+            new(2, "Object 2", "This is the second element in the list", 2.0),
+            new(3, "Object 3", "This is the third element in the list", 3.0)
+        };
+// Use the ForEach function to iterate over the collection and print the values
+// to the console along with the index.
+a.ForEach((item, index) => Console.WriteLine($"Item {index}: {item}"));
+```
+
+You can also use the ForEach function to generate a new collection of values.
+```csharp
+var a = new List<SourceObject>
+        {
+            new(1, "Object 1", "This is the first element in the list", 1.0),
+            new(2, "Object 2", "This is the second element in the list", 2.0),
+            new(3, "Object 3", "This is the third element in the list", 3.0)
+        };
+var b = a.ForEach((item, index) => new TargetObject(new Guid(item.Id.ToString().PadLeft(32, '0')), item.Name, item.Description, item.Value)).ToList();
+Assert.Equal(3, b.Count);
+// Use the Assert.All method to check if all items in the collection are of the correct type.
+Assert.All(b, x => Assert.IsType<TargetObject>(x));
 ```

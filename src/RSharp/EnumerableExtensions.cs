@@ -8,4 +8,6 @@ public static class EnumerableExtensions
             action(item, index);
             return item;
         });
+    
+    public static IEnumerable<TResult> ForEach<T, TResult>(this IEnumerable<T> source, Func<T, int, TResult> action) => source.Select(action);
 }
