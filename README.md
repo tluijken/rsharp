@@ -58,7 +58,7 @@ The `Result` type is a discriminated union, which can be either `Ok` or `Err`. I
 ```csharp
 private static Result<int, Exception> Divide(int a, int b) =>
     b == 0
-        ? new Exception("Cannot divide by zero")
+        ? new DivideByZeroException("Cannot divide by zero")
         : a / b;
 
 var result = Divide(4, 2);
