@@ -4,7 +4,7 @@ public class TestOptions
 {
     private static Option<string> GetSomeValue() => "Some value";
 
-    private static Option<string> GetNoValue() => null;
+    private static Option<string> GetNoValue() => null!;
 
     [Fact]
     public void TestSome()

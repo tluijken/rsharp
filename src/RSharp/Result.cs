@@ -51,7 +51,7 @@ public record Result<TResult, TException> where TException : Exception
             _ => defaultValue(_error!)
         };
     
-    public TResult Expect(string message) =>  
+    public TResult Expect(string message) =>
         _isOk switch
         {
             true => _value!,

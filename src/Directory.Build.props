@@ -1,0 +1,46 @@
+﻿<Project>
+    <PropertyGroup>
+        <Copyright>Copyright (c) Thomas Luijken</Copyright>
+        <Authors>Thomas Luijken</Authors>
+        <Owners>Thomas Luijken</Owners>
+
+        <RepositoryUrl>https://github.com/tluijken/task-endurer</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Product>$(AssemblyName) ($(TargetFramework))</Product>
+        <NeutralLanguage>en</NeutralLanguage>
+
+        <Nullable>enable</Nullable>
+        <LangVersion>11.0</LangVersion>
+        <NoWarn>$(NoWarn);1591;1701;1702;1705;VSX1000;NU1603;CA1014;CA1716;AD0001;CA2225;CA2201;CA1062;CA1065</NoWarn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(IsTestProject)' != 'true'">
+        <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="AsyncFixer" Version="1.6.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="IDisposableAnalyzers" Version="4.0.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+</Project>
