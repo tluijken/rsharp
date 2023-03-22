@@ -15,7 +15,10 @@ public class TestMap
     {
         var a = new SourceObject(1, "Name", "Description", 1.0);
         var b = a.Map(Factory);
-        CompareSourceWithMappedTarget(b, a);
+        Assert.NotNull(b);
+        Assert.True(b.IsOk());
+        var result = b.Unwrap();
+        CompareSourceWithMappedTarget(result, a);
     }
 
     [Fact]
@@ -27,10 +30,40 @@ public class TestMap
             new(2, "Object 2", "This is the second element in the list", 2.0),
             new(3, "Object 3", "This is the third element in the list", 3.0)
         };
-        var b = a.Map(Factory).ToList();
+        var b = a.Map(Factory);
         Assert.NotNull(b);
-        Assert.Equal(a.Count, b.Count);
-        for (var i = 0; i < a.Count; i++) CompareSourceWithMappedTarget(b[i], a[i]);
+        Assert.True(b.IsOk());
+        var result = b.Unwrap();
+        Assert.NotNull(result);
+        var targetObjects = result as TargetObject[] ?? result.ToArray();
+        Assert.Equal(a.Count, targetObjects.Length);
+        targetObjects.ForEach((item, index) => CompareSourceWithMappedTarget(item, a[index]));
+    }
+
+
+    [Fact]
+    public void TestMappingFailsSingleItem()
+    {
+        var a = new SourceObject(1, "Name", "Description", 1.0);
+        var b = a.Map<SourceObject, TargetObject>(null!);
+        Assert.NotNull(b);
+        Assert.True(b.IsErr());
+        Assert.Throws<NullReferenceException>(() => b.Unwrap());
+    }
+
+    [Fact]
+    public void TestMappingFailsArray()
+    {
+        var a = new List<SourceObject>
+        {
+            new(1, "Object 1", "This is the first element in the list", 1.0),
+            new(2, "Object 2", "This is the second element in the list", 2.0),
+            new(3, "Object 3", "This is the third element in the list", 3.0)
+        };
+        var b = a.Map<SourceObject, TargetObject>(null!);
+        Assert.NotNull(b);
+        Assert.True(b.IsErr());
+        Assert.Throws<ArgumentNullException>(() => b.Unwrap());
     }
 
     private static void CompareSourceWithMappedTarget(TargetObject b, SourceObject a)

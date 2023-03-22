@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace RSharp;
 
+[SuppressMessage("ReSharper", "CA1031", Justification = "We don't know what exceptions the factory function will throw.")]
 public static class MapExtensions
 {
     /// <summary>
@@ -20,7 +23,17 @@ public static class MapExtensions
     /// <returns>
     ///     The target object.
     /// </returns>
-    public static TTarget Map<TSource, TTarget>(this TSource source, Func<TSource, TTarget> factory) => factory(source);
+    public static Result<TTarget, Exception> Map<TSource, TTarget>(this TSource source, Func<TSource, TTarget> factory)
+    {
+        try
+        {
+            return factory(source);
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
+    }
 
     /// <summary>
     ///     Maps an enumerable of source objects to a target object using a factory function.
@@ -40,5 +53,15 @@ public static class MapExtensions
     /// <returns>
     ///     An enumerable of target objects.
     /// </returns>
-    public static IEnumerable<TTarget> Map<TSource, TTarget>(this IEnumerable<TSource> sources, Func<TSource, TTarget> factory) => sources.Select(factory);
+    public static Result<IEnumerable<TTarget>, Exception> Map<TSource, TTarget>(this IEnumerable<TSource> sources, Func<TSource, TTarget> factory)
+    {
+        try
+        {
+            return sources.Select(factory).ToList();
+        }
+        catch (Exception e)
+        {
+            return e;
+        }
+    }
 }
