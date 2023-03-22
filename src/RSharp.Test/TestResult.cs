@@ -83,6 +83,8 @@ public class TestResult
     public void TestExpect(int a, int b, int expected)
     {
         var result = Divide(a, b);
-        Assert.Equal(expected, result.Expect("This is an error"));
+        result.Match(
+            r => Assert.Equal(expected, r),
+            _ => Assert.Throws<Exception>(() => result.Expect("This is an error")));
     }
 }
