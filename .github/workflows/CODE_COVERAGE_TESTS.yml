@@ -37,5 +37,4 @@ jobs:
         working-directory: ./src
         run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       - name: Codecov
-        working-directory: ./src
         uses: codecov/codecov-action@v1
