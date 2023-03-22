@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'TaskEndurer/TaskEndurer.csproj'
+      - 'src/RSharp/RSharp.csproj'
       - '.github/workflows/PUBLISH_PACKAGES.yml'
 
 jobs:
