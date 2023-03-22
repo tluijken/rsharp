@@ -1,0 +1,33 @@
+name: Publish Packages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'TaskEndurer/TaskEndurer.csproj'
+      - '.github/workflows/PUBLISH_PACKAGES.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout repository
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Change directory
+        run: cd src
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Test
+        run: dotnet test
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Publish RSharp
+        uses: brandedoutcast/publish-nuget@v2.5.2
+        with:
+          PROJECT_FILE_PATH: RSharp/RSharp.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
