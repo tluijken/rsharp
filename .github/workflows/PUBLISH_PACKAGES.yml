@@ -18,15 +18,17 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
-      - name: Change directory
-        run: cd src
       - name: Restore dependencies
+        working-directory: ./src
         run: dotnet restore
       - name: Test
+        working-directory: ./src
         run: dotnet test
       - name: Build
+        working-directory: ./src
         run: dotnet build --configuration Release --no-restore
       - name: Publish RSharp
+        working-directory: ./src
         uses: brandedoutcast/publish-nuget@v2.5.2
         with:
           PROJECT_FILE_PATH: RSharp/RSharp.csproj

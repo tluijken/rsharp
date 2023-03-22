@@ -27,13 +27,15 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
-      - name: Change directory
-        run: cd src
       - name: Restore dependencies
+        working-directory: ./src
         run: dotnet restore
       - name: Build
+        working-directory: ./src
         run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
       - name: Test
+        working-directory: ./src
         run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       - name: Codecov
+        working-directory: ./src
         uses: codecov/codecov-action@v1
