@@ -35,7 +35,6 @@ jobs:
         run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
       - name: Test
         working-directory: ./src
-        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover  /p:CoverletOutput=../
       - name: Codecov
         uses: codecov/codecov-action@v1
-        working-directory: ./src
