@@ -30,5 +30,5 @@ jobs:
       - name: Publish RSharp
         uses: brandedoutcast/publish-nuget@v2.5.2
         with:
-          PROJECT_FILE_PATH: RSharp/RSharp.csproj
+          PROJECT_FILE_PATH: src/RSharp/RSharp.csproj
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
