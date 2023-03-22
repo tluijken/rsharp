@@ -2,14 +2,10 @@ namespace RSharp;
 
 public record Result<TResult, TException> where TException : Exception
 {
-    private readonly TResult? _value;
     private readonly TException? _error;
 
     private readonly bool _isOk;
-    
-    public bool IsOk() => _isOk;
-    
-    public bool IsErr() => !_isOk;
+    private readonly TResult? _value;
 
     private Result(TResult value)
     {
@@ -22,6 +18,10 @@ public record Result<TResult, TException> where TException : Exception
         _error = error;
         _isOk = false;
     }
+
+    public bool IsOk() => _isOk;
+
+    public bool IsErr() => !_isOk;
 
     public TResult Unwrap() =>
         _isOk switch
@@ -36,31 +36,33 @@ public record Result<TResult, TException> where TException : Exception
             true => _value!,
             _ => defaultValue
         };
-    
+
     public TResult UnwrapOrElse(Func<TResult> defaultValue) =>
         _isOk switch
         {
             true => _value!,
             _ => defaultValue()
         };
-    
-    public TResult UnwrapOrElse(Func<TException, TResult> defaultValue) => 
+
+    public TResult UnwrapOrElse(Func<TException, TResult> defaultValue) =>
         _isOk switch
         {
             true => _value!,
             _ => defaultValue(_error!)
         };
-    
+
     public TResult Expect(string message) =>
         _isOk switch
         {
             true => _value!,
             _ => throw new Exception(message)
         };
-    
+
     public static implicit operator Result<TResult, TException>(TResult value) => new(value);
+
     public static implicit operator Result<TResult, TException>(TException error) => new(error);
-    public static implicit operator Result<TResult, TException>(Option<TResult> option) => 
+
+    public static implicit operator Result<TResult, TException>(Option<TResult> option) =>
         option switch
         {
             Some<TResult> some => some.Value,

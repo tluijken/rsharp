@@ -2,19 +2,11 @@ namespace RSharp.Test;
 
 public class TestResult
 {
-    private static Result<int, Exception> Divide(int a, int b)
-    {
-        try
-        {
-            var result = a / b;
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return ex;
-        }
-    }
-    
+    private static Result<int, Exception> Divide(int a, int b) =>
+        b == 0
+            ? new DivideByZeroException("Cannot divide by zero")
+            : a / b;
+
     [Fact]
     public void TestImplicitOk()
     {
