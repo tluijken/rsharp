@@ -21,7 +21,7 @@ public static class MapExtensions
     ///     The type of the target object.
     /// </typeparam>
     /// <returns>
-    ///     The target object.
+    ///     A result containing the target object or an exception.
     /// </returns>
     public static Result<TTarget, Exception> Map<TSource, TTarget>(this TSource source, Func<TSource, TTarget> factory)
     {
@@ -51,7 +51,7 @@ public static class MapExtensions
     ///     The type of the target object.
     /// </typeparam>
     /// <returns>
-    ///     An enumerable of target objects.
+    ///     A result containing the target object or an exception.
     /// </returns>
     public static Result<IEnumerable<TTarget>, Exception> Map<TSource, TTarget>(this IEnumerable<TSource> sources, Func<TSource, TTarget> factory)
     {

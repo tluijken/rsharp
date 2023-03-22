@@ -97,6 +97,8 @@ var value2 = result2.UnwrapOr(0); // <= should be 0
 ### Map
 The 'Map' function is used to map a single or multiple values to a new value. It is similar to the `Select` method in LINQ.
 
+Note that the `Map` function returns a Result type, which can be either `Ok` or `Err`. If the mapping fails, the `Err` type will contain the exception that was thrown while mapping.'
+To get the result, you can either call the `Unwrap` method, or the `UnwrapOr` method.
 ```csharp
 // Define a factory method to create a new instance of the target object.
 private static readonly Func<SourceObject, TargetObject> Factory = source =>
@@ -113,11 +115,23 @@ var a = new List<SourceObject>
             new(2, "Object 2", "This is the second element in the list", 2.0),
             new(3, "Object 3", "This is the third element in the list", 3.0)
         };
-        var b = a.Map(Factory).ToList(); 
+var mapResult = a.Map(Factory).ToList();
+
+// Use the Match method to get the result, or the Unwrap method to get the result directly.
+mapResult.Match(
+    ok: b => b, // will be triggered if the mapping succeeds
+    err: e => null // will be triggered if the mapping fails
+);
 ```
 
 You can also map a single value to a new value.
 ```csharp
 var a = new SourceObject(1, "Object 1", "This is the first element in the list", 1.0);
-var b = a.Map(Factory);
+var mapResult = a.Map(Factory);
+
+// Use the Match method to get the result, or the Unwrap method to get the result directly.
+mapResult.Match(
+    ok: b => b, // will be triggered if the mapping succeeds
+    err: e => null // will be triggered if the mapping fails
+);
 ```
