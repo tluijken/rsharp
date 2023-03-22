@@ -2,6 +2,8 @@ namespace RSharp.Test;
 
 public class TestOptions
 {
+    private record Person(string Name, int Age);
+    
     private static Option<string> GetSomeValue() => "Some value";
 
     private static Option<string> GetNoValue() => null!;
@@ -30,5 +32,12 @@ public class TestOptions
         option.Match(
             v => Assert.Equal(value, v),
             () => AssertExtensions.None(option));
+    }
+
+    [Fact]
+    public void TestHashCodes()
+    {
+        var some = GetSomeValue();
+        Assert.Equal("Some value".GetHashCode(), some.GetHashCode());
     }
 }

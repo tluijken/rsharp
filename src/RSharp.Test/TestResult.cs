@@ -50,31 +50,39 @@ public class TestResult
         Assert.Throws<DivideByZeroException>(() => result.Unwrap());
     }
     
-    [Fact]
-    public void TestUnwrapOr()
+    [Theory]
+    [InlineData(4, 2, 2)]
+    [InlineData(4, 0, 0)]
+    public void TestUnwrapOr(int a, int b, int expected)
     {
-        var result = Divide(4, 0);
-        Assert.Equal(2, result.UnwrapOr(2));
+        var result = Divide(a, b);
+        Assert.Equal(expected, result.UnwrapOr(0));
     }
     
-    [Fact]
-    public void TestUnwrapOrElse()
+    [Theory]
+    [InlineData(4, 2, 2)]
+    [InlineData(4, 0, 0)]
+    public void TestUnwrapOrElse(int a, int b, int expected)
     {
-        var result = Divide(4, 0);
-        Assert.Equal(2, result.UnwrapOrElse(() => 2));
+        var result = Divide(a, b);
+        Assert.Equal(expected, result.UnwrapOrElse(() => 0));
+    }
+
+    [Theory]
+    [InlineData(4, 2, 2)]
+    [InlineData(4, 0, 2)]
+    public void TestUnwrapOrElseWithException(int a, int b, int expected)
+    {
+        var result = Divide(a, b);
+        Assert.Equal(expected, result.UnwrapOrElse(ex => 2));
     }
     
-    [Fact]
-    public void TestUnwrapOrElseWithException()
+    [Theory]
+    [InlineData(4, 2, 2)]
+    [InlineData(4, 0, 2)]
+    public void TestExpect(int a, int b, int expected)
     {
-        var result = Divide(4, 0);
-        Assert.Equal(2, result.UnwrapOrElse(ex => 2));
-    }
-    
-    [Fact]
-    public void TestExpect()
-    {
-        var result = Divide(4, 0);
-        Assert.Throws<Exception>(() => result.Expect("This is an error"));
+        var result = Divide(a, b);
+        Assert.Equal(expected, result.Expect("This is an error"));
     }
 }
