@@ -51,17 +51,7 @@ public static class MapExtensions
     ///     The type of the target object.
     /// </typeparam>
     /// <returns>
-    ///     A result containing the target object or an exception.
+    ///     An enumerable, containing the mapping results..
     /// </returns>
-    public static Result<IEnumerable<TTarget>, Exception> Map<TSource, TTarget>(this IEnumerable<TSource> sources, Func<TSource, TTarget> factory)
-    {
-        try
-        {
-            return sources.Select(factory).ToList();
-        }
-        catch (Exception e)
-        {
-            return e;
-        }
-    }
+    public static IEnumerable<Result<TTarget, Exception>> Map<TSource, TTarget>(this IEnumerable<TSource> sources, Func<TSource, TTarget> factory) => sources.Select(s => s.Map(factory));
 }

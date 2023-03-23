@@ -32,11 +32,10 @@ public class TestMap
         };
         var b = a.Map(Factory);
         Assert.NotNull(b);
-        Assert.True(b.IsOk());
-        var result = b.Unwrap();
-        Assert.NotNull(result);
-        var targetObjects = result as TargetObject[] ?? result.ToArray();
-        Assert.Equal(a.Count, targetObjects.Length);
+        Assert.True(b.All(m => m.IsOk()));
+        Assert.NotNull(b);
+        var targetObjects = b.Select(d => d.Unwrap()).ToList();
+        Assert.Equal(a.Count, targetObjects.Count);
         targetObjects.ForEach((item, index) => CompareSourceWithMappedTarget(item, a[index]));
     }
 
@@ -56,14 +55,22 @@ public class TestMap
     {
         var a = new List<SourceObject>
         {
-            new(1, "Object 1", "This is the first element in the list", 1.0),
+            new(-1, "Object 1", "This is the first element in the list", 1.0),
             new(2, "Object 2", "This is the second element in the list", 2.0),
             new(3, "Object 3", "This is the third element in the list", 3.0)
         };
-        var b = a.Map<SourceObject, TargetObject>(null!);
+        var b = a.Map(Factory);
         Assert.NotNull(b);
-        Assert.True(b.IsErr());
-        Assert.Throws<ArgumentNullException>(() => b.Unwrap());
+        Assert.False(b.All(m => m.IsOk()));
+        
+        var failed = b.Where(m => m.IsErr()).ToList();
+        Assert.Single(failed);
+        Assert.Throws<FormatException>(() => failed[0].Unwrap());
+        
+        var success = b.Where(m => m.IsOk()).ToList();
+        Assert.Equal(2, success.Count);
+        var targetObjects = success.Select(d => d.Unwrap()).ToList();
+        targetObjects.ForEach((item, index) => CompareSourceWithMappedTarget(item, a[index + 1]));
     }
 
     private static void CompareSourceWithMappedTarget(TargetObject b, SourceObject a)

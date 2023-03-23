@@ -98,34 +98,16 @@ var value2 = result2.UnwrapOr(0); // <= should be 0
 ### Map
 The 'Map' function is used to map a single or multiple values to a new value. It is similar to the `Select` method in LINQ.
 
+> To map `SourceObject` to `TargetObject`, we use the following function for the examples below.
+> ```csharp
+> // Define a factory method to create a new instance of the target object.
+> private static readonly Func<SourceObject, TargetObject> Factory = source =>
+>     new TargetObject(new Guid(source.Id.ToString().PadLeft(32, '0')), source.Name, source.Description,
+>         source.Value);
+> ```
+
 Note that the `Map` function returns a Result type, which can be either `Ok` or `Err`. If the mapping fails, the `Err` type will contain the exception that was thrown while mapping.'
-To get the result, you can either call the `Unwrap` method, or the `UnwrapOr` method.
-```csharp
-// Define a factory method to create a new instance of the target object.
-private static readonly Func<SourceObject, TargetObject> Factory = source =>
-    new TargetObject(new Guid(source.Id.ToString().PadLeft(32, '0')), source.Name, source.Description,
-        source.Value);
-            
-// Define the source and target objects.
-internal record SourceObject(int Id, string Name, string Description, double Value);
-internal record TargetObject(Guid Id, string Name, string Description, double Value);
-
-var a = new List<SourceObject>
-        {
-            new(1, "Object 1", "This is the first element in the list", 1.0),
-            new(2, "Object 2", "This is the second element in the list", 2.0),
-            new(3, "Object 3", "This is the third element in the list", 3.0)
-        };
-var mapResult = a.Map(Factory).ToList();
-
-// Use the Match method to get the result, or the Unwrap method to get the result directly.
-mapResult.Match(
-    ok: b => b, // will be triggered if the mapping succeeds
-    err: e => null // will be triggered if the mapping fails
-);
-```
-
-You can also map a single value to a new value.
+To get the result, you can either call the `Unwrap` method, or the `UnwrapOr` method, or any other of the `Unwrap` methods.
 ```csharp
 var a = new SourceObject(1, "Object 1", "This is the first element in the list", 1.0);
 var mapResult = a.Map(Factory);
@@ -135,6 +117,28 @@ mapResult.Match(
     ok: b => b, // will be triggered if the mapping succeeds
     err: e => null // will be triggered if the mapping fails
 );
+```
+
+You can also map a collection of values to a new value. Since the map function can either fail or succeed, the result will be a collection of `Result` types.
+You can use the `Unwrap` method to get the results that succeeded, or the `UnwrapOr` method to get the results that succeeded, or a default value if the mapping failed.
+Or just use the `Where` method to filter out the results that failed.
+```csharp           
+// Define the source and target objects.
+internal record SourceObject(int Id, string Name, string Description, double Value);
+internal record TargetObject(Guid Id, string Name, string Description, double Value);
+
+var a = new List<SourceObject>
+        {
+            new(-1, "Object 1", "This is the first element in the list", 1.0),
+            new(2, "Object 2", "This is the second element in the list", 2.0),
+            new(3, "Object 3", "This is the third element in the list", 3.0)
+        };
+var b = a.Map(Factory).ToList();
+
+// Filter out the errors, should be one item in this case as the first item has an invalid id.
+var errors = b.Where(x => x.IsErr()).ToList();
+// Get the results that succeeded, should be two items in this case.
+var results = b.Where(x => x.IsOk()).Select(x => x.Unwrap()).ToList();
 ```
 
 ### ForEach
@@ -160,7 +164,7 @@ var a = new List<SourceObject>
             new(2, "Object 2", "This is the second element in the list", 2.0),
             new(3, "Object 3", "This is the third element in the list", 3.0)
         };
-var b = a.ForEach((item, index) => new TargetObject(new Guid(item.Id.ToString().PadLeft(32, '0')), item.Name, item.Description, item.Value)).ToList();
+var b = a.ForEach((item, index) => Factory(item)).ToList();
 Assert.Equal(3, b.Count);
 // Use the Assert.All method to check if all items in the collection are of the correct type.
 Assert.All(b, x => Assert.IsType<TargetObject>(x));
