@@ -8,7 +8,7 @@
     <owners>$author$</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial release</releaseNotes>
+    <releaseNotes>Map on collections should return a collection of Options for railway oriented programming. Added Tee and Validation extension methods</releaseNotes>
     <copyright>Copyright 2023</copyright>
     <tags>rust functional</tags>
   </metadata>

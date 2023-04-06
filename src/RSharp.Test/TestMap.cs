@@ -16,7 +16,7 @@ public class TestMap
         var a = new SourceObject(1, "Name", "Description", 1.0);
         var b = a.Map(Factory);
         Assert.NotNull(b);
-        Assert.True(b.IsOk());
+        Assert.True(b.IsSome());
         var result = b.Unwrap();
         CompareSourceWithMappedTarget(result, a);
     }
@@ -32,7 +32,7 @@ public class TestMap
         };
         var b = a.Map(Factory);
         Assert.NotNull(b);
-        Assert.True(b.All(m => m.IsOk()));
+        Assert.True(b.All(m => m.IsSome()));
         Assert.NotNull(b);
         var targetObjects = b.Select(d => d.Unwrap()).ToList();
         Assert.Equal(a.Count, targetObjects.Count);
@@ -46,8 +46,8 @@ public class TestMap
         var a = new SourceObject(1, "Name", "Description", 1.0);
         var b = a.Map<SourceObject, TargetObject>(null!);
         Assert.NotNull(b);
-        Assert.True(b.IsErr());
-        Assert.Throws<NullReferenceException>(() => b.Unwrap());
+        Assert.False(b.IsSome());
+        Assert.Throws<Exception>(() => b.Unwrap());
     }
 
     [Fact]
@@ -61,15 +61,15 @@ public class TestMap
         };
         var b = a.Map(Factory);
         Assert.NotNull(b);
-        Assert.False(b.All(m => m.IsOk()));
+        Assert.False(b.All(m => m.IsSome()));
         
-        var failed = b.Where(m => m.IsErr()).ToList();
+        var failed = b.Where(m => !m.IsSome()).ToList();
         Assert.Single(failed);
-        Assert.Throws<FormatException>(() => failed[0].Unwrap());
+        Assert.Throws<Exception>(() => failed[0].Unwrap());
         
-        var success = b.Where(m => m.IsOk()).ToList();
+        var success = b.Where(m => m.IsSome()).ToList();
         Assert.Equal(2, success.Count);
-        var targetObjects = success.Select(d => d.Unwrap()).ToList();
+        var targetObjects = success.ConvertAll(d => d.Unwrap());
         targetObjects.ForEach((item, index) => CompareSourceWithMappedTarget(item, a[index + 1]));
     }
 
