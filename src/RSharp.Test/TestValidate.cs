@@ -59,7 +59,8 @@ public class TestValidate
         var isValid = dutchPhoneNumber.Length is 10 or 12 or 13;
         if (!isValid) return false;
         // validate prefix 0, 0031 or +31
-        isValid = (isValid && dutchPhoneNumber.StartsWith("0")) || dutchPhoneNumber.StartsWith("0031") ||
+        isValid = dutchPhoneNumber.StartsWith("0") ||
+                  dutchPhoneNumber.StartsWith("0031") ||
                   dutchPhoneNumber.StartsWith("+31");
         if (!isValid) return false;
 
@@ -85,7 +86,7 @@ public class TestValidate
     }
 
     [Theory]
-    [InlineData("Thomas Luijken", true)]
+    [InlineData("John Doe", true)]
     [InlineData("Justin Bieber", false)]
     [InlineData("Ju", false)]
     [InlineData("This is a username that is way too long", false)]

@@ -2,8 +2,6 @@ namespace RSharp.Test;
 
 public class TestOptions
 {
-    private record Person(string Name, int Age);
-    
     private static Option<string> GetSomeValue() => "Some value";
 
     private static Option<string> GetNoValue() => null!;
@@ -12,7 +10,7 @@ public class TestOptions
     public void TestSome()
     {
         var some = GetSomeValue();
-        Assert.True(some is Some<string>);
+        Assert.True(some.IsSome());
         Assert.Equal("Some value", some);
     }
 
@@ -20,7 +18,7 @@ public class TestOptions
     public void TestNone()
     {
         var none = GetNoValue();
-        Assert.Null(none);
+        Assert.True(none.IsNone());
     }
 
     [Theory]
@@ -31,7 +29,7 @@ public class TestOptions
         var option = value.ToOption();
         option.Match(
             v => Assert.Equal(value, v),
-            () => AssertExtensions.None(option));
+            () => Assert.True(option.IsNone()));
     }
 
     [Fact]

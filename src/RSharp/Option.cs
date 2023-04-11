@@ -1,12 +1,52 @@
-﻿namespace RSharp;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
+
+namespace RSharp;
 
 /// <summary>
 ///     Represents a <see cref="Option{T}" /> instance that has a value.
 /// </summary>
-/// <param name="Value"></param>
 /// <typeparam name="T"></typeparam>
-public record Some<T>(T Value) : Option<T>
+[SuppressMessage("CodeAnalysis", "CA1815", Justification = "This is a value type.")]
+[SuppressMessage("CodeAnalysis", "CA2231", Justification = "This is a value type.")]
+[SuppressMessage("CodeAnalysis", "CA1000", Justification = "This is a value type.")]
+public readonly struct Option<T> : IEquatable<Option<T>>
 {
+    /// <summary>
+    ///     Creates a new instance of <see cref="Option{T}" />.
+    /// </summary>
+    /// <param name="value">
+    ///     The value to bind to the <see cref="Option{T}" />.
+    /// </param>
+    private Option(T value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        Value = value;
+        _isSome = true;
+    }
+
+    internal readonly T? Value;
+    private readonly bool _isSome;
+
+    /// <summary>
+    ///     Construct an Option of T in a Some state
+    /// </summary>
+    /// <param name="value">Value to bind, must be non-null</param>
+    /// <returns>Option of A</returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> Some(T value) =>
+        value is null
+            ? throw new ArgumentNullException(nameof(value))
+            : new Option<T>(value);
+
+    /// <summary>
+    ///     Construct an Option of T in a None state
+    /// </summary>
+    [SuppressMessage("CodeAnalysis", "CA1805", Justification = "We want this.")]
+    public static readonly Option<T> None = default;
+
     /// <summary>
     ///     Determines whether the specified object is equal to the current object.
     /// </summary>
@@ -17,75 +57,58 @@ public record Some<T>(T Value) : Option<T>
     ///     <see langword="true" /> if the specified object is equal to the current object; otherwise, <see langword="false" />
     ///     .
     /// </returns>
-    public virtual bool Equals(Some<T>? other) =>
+    public bool Equals(Option<T>? other) =>
         other is not null && EqualityComparer<T>.Default.Equals(Value, other.Value);
 
     /// <summary>
-    ///     Implicitly converts a value to a <see cref="Some{T}" />.
+    ///     Implicitly converts a value to a <see cref="Option{T}" />.
     /// </summary>
     /// <param name="value">
     ///     The value to convert.
     /// </param>
     /// <returns>
-    ///     The <see cref="Some{T}" />.
+    ///     The <see cref="Option{T}" />.
     /// </returns>
-    public static implicit operator Some<T>(T value) => new(value);
+    public static implicit operator Option<T>(T value) =>
+        value is null || EqualityComparer<T>.Default.Equals(value, default) ? None : Some(value);
 
     /// <summary>
-    ///     Implicitly converts a <see cref="Some{T}" /> to a value.
+    ///     Implicitly converts a <see cref="Option{T}" /> to a value.
     /// </summary>
     /// <param name="this">
-    ///     The <see cref="Some{T}" /> to convert.
+    ///     The <see cref="Option{T}" /> to convert.
     /// </param>
     /// <returns>
     ///     The value.
     /// </returns>
-    public static implicit operator T(Some<T> @this) => @this.Value;
+    public static implicit operator T(Option<T> @this) => @this.Value ??
+                                                          throw new InvalidOperationException(
+                                                              "Cannot implicitly convert None to a value.");
+
+    public override bool Equals(object? obj) => obj is Option<T> other && Equals(other);
+
+    public override int GetHashCode() => Value?.GetHashCode() ?? 0;
+
+    public bool Equals(Option<T> other) => EqualityComparer<T>.Default.Equals(Value, other.Value);
 
     /// <summary>
-    ///     Gets the hash code for this instance.
+    ///     Indicates whether the <see cref="Option{T}" /> contains a value.
     /// </summary>
+    /// <typeparam name="T">
+    ///     The type of the value.
+    /// </typeparam>
     /// <returns>
-    ///     A 32-bit signed integer that is the hash code for this instance.
+    ///     <see langword="true" /> if the <see cref="Option{T}" /> is has a value; otherwise,
+    ///     <see langword="false" />.
     /// </returns>
-    public override int GetHashCode() => Value is not null ? EqualityComparer<T>.Default.GetHashCode(Value) : 0;
-}
+    [Pure]
+    public bool IsSome() => _isSome;
 
-/// <summary>
-///     Represents a <see cref="Option{T}" /> instance that does not have a value.
-/// </summary>
-/// <typeparam name="T"></typeparam>
-public record None<T> : Option<T>
-{
     /// <summary>
-    ///     Implicitly converts a <see cref="None{T}" /> to a value.
+    ///     Is the option in a None state
     /// </summary>
-    /// <param name="_">
-    ///     The <see cref="None{T}" /> to convert.
-    /// </param>
-    /// <returns></returns>
-    public static implicit operator None<T>(T _) => new();
-}
-
-/// <summary>
-///     Represents a value that may or may not be present.
-/// </summary>
-/// <typeparam name="T">
-///     The type of the value.
-/// </typeparam>
-public record Option<T>
-{
-    /// <summary>
-    ///     Implicitly converts a value to either a <see cref="Some{T}" /> or a <see cref="None{T}" /> depending on whether the
-    ///     value is <see langword="null" />.
-    /// </summary>
-    /// <param name="value">
-    ///     The value to convert.
-    /// </param>
-    /// <returns>
-    ///     The <see cref="Some{T}" /> or <see cref="None{T}" />.
-    /// </returns>
-    public static implicit operator Option<T>(T value) => value is null ? new None<T>() : new Some<T>(value);
+    [Pure]
+    public bool IsNone() => !_isSome;
 }
 
 /// <summary>
@@ -95,38 +118,32 @@ public static class OptionExtensions
 {
     /// <summary>
     ///     Matches the <see cref="Option{T}" />. value and executes the specified <paramref name="some" /> or
-    ///     <paramref name="none" /> action, based on whether the <see cref="Option{T}" /> is a <see cref="Some{T}" /> or a
-    ///     <see cref="None{T}" />.
+    ///     <paramref name="none" /> action, based on whether the <see cref="Option{T}" /> has a value or not.
     /// </summary>
     /// <param name="option">
     ///     The <see cref="Option{T}" /> containing the value to match.
     /// </param>
     /// <param name="some">
-    ///     The action to execute if the <see cref="Option{T}" /> is a <see cref="Some{T}" />.
+    ///     The action to execute if the <see cref="Option{T}" /> is has a value.
     /// </param>
     /// <param name="none">
-    ///     The action to execute if the <see cref="Option{T}" /> is a <see cref="None{T}" />.
+    ///     The action to execute if the <see cref="Option{T}" /> is has no valur.
     /// </param>
     /// <typeparam name="T">
     ///     The type of the value.
     /// </typeparam>
     public static void Match<T>(this Option<T> option, Action<T> some, Action none)
     {
-        switch (option)
-        {
-            case Some<T> someOption:
-                some(someOption.Value);
-                break;
-            default:
-                none();
-                break;
-        }
+        if (option.IsSome())
+            some(option.Value!);
+        else
+            none();
     }
 
     /// <summary>
     ///     Converts a value to an <see cref="Option{T}" />.
     /// </summary>
-    /// <param name="value">
+    /// <param name="this">
     ///     The value to convert.
     /// </param>
     /// <typeparam name="T">
@@ -150,11 +167,11 @@ public static class OptionExtensions
     ///     The value.
     /// </returns>
     /// <exception cref="Exception">
-    ///     Thrown if the <see cref="Option{T}" /> is a <see cref="None{T}" />.
+    ///     Thrown if the <see cref="Option{T}" /> has no value to unwrap.
     /// </exception>
     public static T Unwrap<T>(this Option<T> @this) => @this switch
     {
-        Some<T> some => some.Value,
+        T some => some,
         _ => throw new Exception("There was no value to unwrap")
     };
 
@@ -165,7 +182,7 @@ public static class OptionExtensions
     ///     The <see cref="Option{T}" /> to convert.
     /// </param>
     /// <param name="defaultValue">
-    ///     The default value to return if the <see cref="Option{T}" /> is a <see cref="None{T}" />.
+    ///     The default value to return if the <see cref="Option{T}" /> is has no value.
     /// </param>
     /// <typeparam name="T">
     ///     The type of the value.
@@ -175,36 +192,21 @@ public static class OptionExtensions
     /// </returns>
     public static T UnwrapOr<T>(this Option<T> @this, T defaultValue) => @this switch
     {
-        Some<T> some => some.Value,
+        T some => some,
         _ => defaultValue
     };
 
     /// <summary>
-    ///     Indicates whether the <see cref="Option{T}" /> contains a value.
+    ///     Performs the specified action on the <see cref="Option{T}" /> if it has a value.
     /// </summary>
     /// <param name="this">
-    ///     The <see cref="Option{T}" /> to check.
+    ///     The <see cref="Option{T}" />.
+    /// </param>
+    /// <param name="action">
+    ///     The action to perform.
     /// </param>
     /// <typeparam name="T">
     ///     The type of the value.
-    /// </typeparam>
-    /// <returns>
-    ///     <see langword="true" /> if the <see cref="Option{T}" /> is a <see cref="Some{T}" />; otherwise,
-    ///     <see langword="false" />.
-    /// </returns>
-    public static bool IsSome<T>(this Option<T> @this) => @this is Some<T>;
-    
-    /// <summary>
-    ///     Performs the specified action on the <see cref="Option{T}" /> if it is a <see cref="Some{T}" />.
-    /// </summary>
-    /// <param name="this">
-    ///    The <see cref="Option{T}" />.
-    /// </param>
-    /// <param name="action">
-    ///    The action to perform.
-    /// </param>
-    /// <typeparam name="T">
-    ///   The type of the value.
     /// </typeparam>
     /// <returns>
     ///     The <see cref="Option{T}" />.

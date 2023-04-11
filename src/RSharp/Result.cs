@@ -1,8 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace RSharp;
 
-public record Result<TResult, TException> where TException : Exception
+[SuppressMessage("CodeAnalysis", "CA1815", Justification = "This is a value type.")]
+[SuppressMessage("CodeAnalysis", "CA2231", Justification = "This is a value type.")]
+public readonly struct Result<TResult> : IEquatable<Result<TResult>>
 {
-    private readonly TException? _error;
+    private readonly Exception? _error;
 
     private readonly bool _isOk;
     private readonly TResult? _value;
@@ -13,7 +17,7 @@ public record Result<TResult, TException> where TException : Exception
         _isOk = true;
     }
 
-    private Result(TException error)
+    private Result(Exception error)
     {
         _error = error;
         _isOk = false;
@@ -44,7 +48,7 @@ public record Result<TResult, TException> where TException : Exception
             _ => defaultValue()
         };
 
-    public TResult UnwrapOrElse(Func<TException, TResult> defaultValue) =>
+    public TResult UnwrapOrElse(Func<Exception, TResult> defaultValue) =>
         _isOk switch
         {
             true => _value!,
@@ -58,28 +62,43 @@ public record Result<TResult, TException> where TException : Exception
             _ => throw new Exception(message)
         };
 
-    public static implicit operator Result<TResult, TException>(TResult value) => new(value);
+    public static implicit operator Result<TResult>(TResult value) => new(value);
 
-    public static implicit operator Result<TResult, TException>(TException error) => new(error);
+    public static implicit operator Result<TResult>(Exception error) => new(error);
 
-    public static implicit operator Result<TResult, TException>(Option<TResult> option) =>
+    public static implicit operator Result<TResult>(Option<TResult> option) =>
         option switch
         {
-            Some<TResult> some => some.Value,
-            None<TResult> _ => throw new Exception("Option is None"),
+            TResult some => some,
             _ => throw new Exception("Option is None")
         };
 
-    public void Match(Action<TResult> okAction, Action<TException> errorAction)
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public void Match(Action<TResult> Ok, Action<Exception> Err)
     {
         switch (_isOk)
         {
             case true:
-                okAction(_value!);
+                Ok(_value!);
                 break;
             default:
-                errorAction(_error!);
+                Err(_error!);
                 break;
         }
     }
+
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public Result<TTarget> Match<TTarget>(Func<object, Result<TTarget>> Ok, Func<Exception, Exception> Err) =>
+        _isOk switch
+        {
+            true => Ok(_value!),
+            _ => Err(_error!)
+        };
+
+    public override bool Equals(object? obj) => obj is Result<TResult> other && Equals(other);
+
+    public bool Equals(Result<TResult> other) => Equals(_error, other._error) && _isOk == other._isOk &&
+                                                 EqualityComparer<TResult?>.Default.Equals(_value, other._value);
+
+    public override int GetHashCode() => HashCode.Combine(_error, _isOk, _value);
 }

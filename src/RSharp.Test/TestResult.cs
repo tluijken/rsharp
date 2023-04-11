@@ -2,7 +2,7 @@ namespace RSharp.Test;
 
 public class TestResult
 {
-    private static Result<int, Exception> Divide(int a, int b) =>
+    private static Result<int> Divide(int a, int b) =>
         b == 0
             ? new DivideByZeroException("Cannot divide by zero")
             : a / b;
@@ -10,15 +10,15 @@ public class TestResult
     [Fact]
     public void TestImplicitOk()
     {
-        Result<int, Exception> result = 2;
+        Result<int> result = 2;
         Assert.True(result.IsOk());
         Assert.Equal(2, result.Unwrap());
     }
-    
+
     [Fact]
     public void TestImplicitErr()
     {
-        Result<int, Exception> result = new DivideByZeroException();
+        Result<int> result = new DivideByZeroException();
         Assert.True(result.IsErr());
         Assert.Throws<DivideByZeroException>(() => result.Unwrap());
     }
@@ -33,7 +33,7 @@ public class TestResult
             v => Assert.Equal(expected, v),
             ex => Assert.IsType<DivideByZeroException>(ex));
     }
-    
+
     [Fact]
     public void TestOk()
     {
@@ -41,7 +41,7 @@ public class TestResult
         Assert.True(result.IsOk());
         Assert.Equal(2, result.Unwrap());
     }
-    
+
     [Fact]
     public void TestErr()
     {
@@ -49,7 +49,7 @@ public class TestResult
         Assert.True(result.IsErr());
         Assert.Throws<DivideByZeroException>(() => result.Unwrap());
     }
-    
+
     [Theory]
     [InlineData(4, 2, 2)]
     [InlineData(4, 0, 0)]
@@ -58,7 +58,7 @@ public class TestResult
         var result = Divide(a, b);
         Assert.Equal(expected, result.UnwrapOr(0));
     }
-    
+
     [Theory]
     [InlineData(4, 2, 2)]
     [InlineData(4, 0, 0)]
@@ -74,9 +74,9 @@ public class TestResult
     public void TestUnwrapOrElseWithException(int a, int b, int expected)
     {
         var result = Divide(a, b);
-        Assert.Equal(expected, result.UnwrapOrElse(ex => 2));
+        Assert.Equal(expected, result.UnwrapOrElse(_ => 2));
     }
-    
+
     [Theory]
     [InlineData(4, 2, 2)]
     [InlineData(4, 0, 2)]

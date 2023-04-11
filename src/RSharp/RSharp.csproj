@@ -15,7 +15,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="$([MSBuild]::GetPathOfFileAbove('README.md', '$(MSBuildThisFileDirectory)../../'))" Pack="true" PackagePath="\" />
-        <None Update="icon.png" Pack="true" PackagePath="\" />
+        <None Include="$([MSBuild]::GetPathOfFileAbove('README.md', '$(MSBuildThisFileDirectory)../../'))" Pack="true" PackagePath="\"/>
+        <None Update="icon.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>

@@ -6,8 +6,8 @@ public static class FunctionalExtensions
     {
         switch (option)
         {
-            case Some<T> someOption:
-                some(someOption.Value);
+            case T someOption:
+                some(someOption);
                 break;
             default:
                 none();
@@ -17,26 +17,25 @@ public static class FunctionalExtensions
 
     // Notice that 'All' will also return early as soon as one of the validations fails
     public static bool Validate<T>(this T @this, params Func<T, bool>[] predicates) => predicates.All(p => p(@this));
-    
 
     /// <summary>
     ///     Performs the specified action on the given value and returns the value.
     /// </summary>
     /// <param name="this">
-    ///    The value to perform the action on.
+    ///     The value to perform the action on.
     /// </param>
     /// <param name="action">
-    ///    The action to perform on the value.
+    ///     The action to perform on the value.
     /// </param>
     /// <typeparam name="T">
-    ///   The type of the value.
+    ///     The type of the value.
     /// </typeparam>
     /// <returns>
-    ///  The value.
+    ///     The value.
     /// </returns>
     public static T Tee<T>(this T @this, Action<T> action)
     {
-        if (@this is not null && @this is not None<T>)
+        if (@this is not null && (@this is not Option<T> option || option.IsNone()))
             action(@this);
         return @this;
     }

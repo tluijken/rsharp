@@ -4,7 +4,8 @@ public class TestEnumerableExtensions
 {
     private readonly int[] _ages = { 22, 20, 29, 66, 42, 74, 15, 33, 45, 6 };
 
-    private readonly string[] _names = { "John", "Paul", "George", "Ringo", "Pete", "John", "Paul", "George", "Ringo", "Pete" };
+    private readonly string[] _names =
+        { "John", "Paul", "George", "Ringo", "Pete", "John", "Paul", "George", "Ringo", "Pete" };
 
     [Fact]
     public void TestForEachFunction()
