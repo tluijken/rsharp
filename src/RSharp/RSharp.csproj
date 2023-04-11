@@ -4,14 +4,14 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.1.1</Version>
-        <AssemblyVersion>0.1.1</AssemblyVersion>
-        <PackageVersion>0.1.1</PackageVersion>
+        <Version>0.1.2</Version>
+        <AssemblyVersion>0.1.2</AssemblyVersion>
+        <PackageVersion>0.1.2</PackageVersion>
         <Description>Provides functional programming utilities, which should be recognizable for rust developers also using csharp.</Description>
         <PackageProjectUrl>https://github.com/tluijken/rsharp</PackageProjectUrl>
         <PackageIcon>icon.png</PackageIcon>
         <PackageTags>Rust Functional</PackageTags>
-        <PackageReleaseNotes>Map on collections should return a collection of Options for railway oriented programming. Added Tee and Validation extension methods</PackageReleaseNotes>
+        <PackageReleaseNotes>Map can now return both option and result types, based on the result of the function passed to it</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>

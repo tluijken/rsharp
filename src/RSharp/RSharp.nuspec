@@ -8,8 +8,8 @@
         <owners>$author$</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>$description$</description>
-        <releaseNotes>Map on collections should return a collection of Options for railway oriented programming. Added
-            Tee and Validation extension methods
+        <releaseNotes>
+            Map can now return both option and result types, based on the result of the function passed to it.
         </releaseNotes>
         <copyright>Copyright 2023</copyright>
         <tags>rust functional</tags>
